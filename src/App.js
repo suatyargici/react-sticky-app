@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
 
-function App() {
+const App = () => {
+  const [points, setPoints] = useState([]);
+  const [data, setData] = useState([]);
+
+  const handleClick = (e) => {
+    setPoints([...points, { x: e.clientX, y: e.clientY }]);
+    setData([]);
+  };
+
+  const redoHandle = (e) => {
+    e.stopPropagation();
+    const newPoints = [...points];
+    const item = newPoints.pop();
+    setData([...data, item]);
+    setPoints(newPoints);
+  };
+
+  const undoHandle = (e) => {
+    e.stopPropagation();
+    const newData = [...data];
+    const item = newData.pop();
+    setPoints([...points, item]);
+    setData(newData);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className="screen" onClick={handleClick}>
+      <div className="header">
+        <button
+          disabled={points.length === 0}
+          onClick={redoHandle}
+          className="button"
         >
-          Learn React
-        </a>
-      </header>
+          Redo
+        </button>
+        <button
+          disabled={data.length === 0}
+          onClick={undoHandle}
+          className="button"
+        >
+          Undo
+        </button>
+      </div>
+
+      {points.map((point, index) => {
+        return (
+          <div
+            key={index}
+            className="point"
+            style={{ '--left': point.x+"px", '--top': point.y +"px"}}
+          ></div>
+        );
+      })}
     </div>
   );
-}
+};
 
 export default App;
